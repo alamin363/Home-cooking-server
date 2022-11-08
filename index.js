@@ -54,7 +54,7 @@ const cookingCollection = client.db("cooks").collection("product");
 // check server and found varyfie user in decoded
 app.get("/", (req, res) => {
   // console.log(req.decoded);
-  res.send("cooking server is running");
+  res.send("cooking server is running now");
 });
 
 // ?product gate limit3
@@ -73,13 +73,14 @@ app.get("/products", async (req, res) => {
       res.status(403).send({
         states: false,
         error: "authentication failed",
-      });
+      })
     }
   } catch (error) {
     console.log(error.name, error.message);
     res.status(401).send("data load failed")
   }
 });
+
 
 // product post
 app.post("/products", async (req, res) => {

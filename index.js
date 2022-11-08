@@ -77,7 +77,7 @@ app.get("/products", async (req, res) => {
     }
   } catch (error) {
     console.log(error.name, error.message);
-    res.status(401).send("data load failed");
+    res.status(401).send("data load failed")
   }
 });
 

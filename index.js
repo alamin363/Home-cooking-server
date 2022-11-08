@@ -38,6 +38,8 @@ const varyFyJwt = async (req, res, next) => {
     console.log(error.name, error.message);
   }
 };
+
+// check project is canected ore not
 const run = () => {
   try {
     client.connect();
@@ -61,7 +63,7 @@ app.get("/products", async (req, res) => {
   try {
     const query = {};
     const result = cookingCollection.find(query);
-    const data = await result.limit(3).toArray();
+    const data = await result.toArray();
     if (data) {
       res.status(200).send({
         states: true,

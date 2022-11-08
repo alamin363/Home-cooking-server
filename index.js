@@ -63,9 +63,9 @@ app.get("/products", async (req, res) => {
   try {
     const query = {};
     const result = cookingCollection.find(query);
-    const data = await result.toArray();
+    const data = await result.limit(3).toArray();
     if (data) {
-      res.status(200).send({
+      res.send({
         states: true,
         data,
       });

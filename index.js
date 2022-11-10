@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 5000;
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 // medial order ----------
 
@@ -11,8 +12,6 @@ app.use(express.json());
 
 // add mongodb ------------
 
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const { json } = require("express");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.ha2hum3.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
@@ -84,7 +83,7 @@ app.get("/products", async (req, res) => {
   } catch (error) {
     res.status(401).send({
       states: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -107,7 +106,7 @@ app.get("/blog", async (req, res) => {
   } catch (error) {
     res.status(401).send({
       states: false,
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -187,13 +186,36 @@ app.get("/review", async (req, res) => {
     }
     const results = reviewCollection.find(query);
     const result = reviewCollection.find(quary);
-    const resultWiteUser = await result.toArray()
+    const resultWiteUser = await result.toArray();
     const data = await results.toArray();
-    if (data && resultWiteUser[0]._id){
+    if (data && resultWiteUser[0]._id) {
       res.send({
         states: true,
         data,
-        resultWiteUser
+        resultWiteUser,
+      });
+    } else {
+      res.status(403).send({
+        states: false,
+        error: "authentication failed",
+      });
+    }
+  } catch (error) {
+    res.status(401).send("data load failed");
+  }
+});
+
+// found review with dedicakor vew
+app.get("/review/:id", async (req, res) => {
+  try {
+    console.log(req.params.id);
+    const query = {product_id: req.params.id}
+    const results = reviewCollection.find(query);
+    const data = await results.toArray();
+    if (data) {
+      res.send({
+        states: true,
+        data
       });
     } else {
       res.status(403).send({
@@ -211,6 +233,24 @@ app.delete("/review/:id", async (req, res) => {
     const { id } = req.params;
     const query = { _id: ObjectId(id) };
     const result = await reviewCollection.deleteOne(query);
+    if (result) {
+      res.status(200).send({
+        states: true,
+        data: result,
+      });
+    } else {
+      res.send({ states: false, error: "authentication failed" });
+    }
+  } catch (error) {
+    res.send({ states: false, error: error.message });
+  }
+});
+app.put("/review/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const query = { _id: ObjectId(id)};
+    const result = await reviewCollection.updateOne(query, { $set: req.body });
+    console.log(result)
     if (result) {
       res.status(200).send({
         states: true,

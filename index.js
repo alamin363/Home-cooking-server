@@ -264,7 +264,7 @@ app.delete("/review/:id", async (req, res) => {
 //   } catch (error) {
 //     res.send({ states: false, error: error.message });
 //   }
-// })
+// });
 
 app.put("/review/:id", async (req, res) => {
   try {

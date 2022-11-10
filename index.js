@@ -95,7 +95,7 @@ app.get("/blog", async (req, res) => {
     if (data) {
       res.send({
         states: true,
-        data
+        data,
       });
     } else {
       res.status(403).send({
@@ -209,13 +209,13 @@ app.get("/review", async (req, res) => {
 app.get("/review/:id", async (req, res) => {
   try {
     console.log(req.params.id);
-    const query = {product_id: req.params.id}
+    const query = { product_id: req.params.id };
     const results = reviewCollection.find(query);
     const data = await results.toArray();
     if (data) {
       res.send({
         states: true,
-        data
+        data,
       });
     } else {
       res.status(403).send({
@@ -245,22 +245,51 @@ app.delete("/review/:id", async (req, res) => {
     res.send({ states: false, error: error.message });
   }
 });
+
+// app.put("/review/:id", async (req, res) => {
+//   try {
+//     const id = req.params.id;
+//      console.log(req.body)
+//     const query = { _id: ObjectId(id)};
+//     const result = await reviewCollection.updateOne(query, { $set: req.body });
+//     console.log(result)
+//     if (result) {
+//       res.status(200).send({
+//         states: true,
+//         data: result,
+//       });
+//     } else {
+//       res.send({ states: false, error: "authentication failed" });
+//     }
+//   } catch (error) {
+//     res.send({ states: false, error: error.message });
+//   }
+// });
+
 app.put("/review/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    const query = { _id: ObjectId(id)};
-    const result = await reviewCollection.updateOne(query, { $set: req.body });
-    console.log(result)
-    if (result) {
-      res.status(200).send({
-        states: true,
-        data: result,
-      });
-    } else {
-      res.send({ states: false, error: "authentication failed" });
-    }
+    const quire = { _id: ObjectId(id) };
+    const updatedData = req.body;
+    const option = { upsert: true };
+    const Reviews = {
+      $set: {
+        name: updatedData.name,
+        nameOfItem: updatedData.nameOfItem,
+        message: updatedData.message,
+        rating: updatedData.rating,
+        img_url: updatedData.img_url,
+        product_id: updatedData.product_id,
+        picture: updatedData.picture,
+      },
+    };
+    const result = await reviewCollection.updateOne(quire, Reviews, option);
+    res.send(result);
   } catch (error) {
-    res.send({ states: false, error: error.message });
+    res.status(401).send({
+      states: false,
+      error: error.message,
+    });
   }
 });
 

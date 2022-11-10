@@ -289,7 +289,7 @@ app.put("/review/:id", async (req, res) => {
     res.status(401).send({
       states: false,
       error: error.message,
-    });
+    })
   }
 });
 
